@@ -4,24 +4,26 @@ import {
   ExceptionFilter,
   HttpException,
   HttpStatus,
+  Logger,
 } from '@nestjs/common';
 
 @Catch()
 export class AllExceptionFilter implements ExceptionFilter {
+  private readonly logger = new Logger(AllExceptionFilter.name);
+
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
+    this.logger.error('Exception', exception);
 
-    let status = HttpStatus.INTERNAL_SERVER_ERROR;
-    let error: string | object = '系统异常';
     if (exception instanceof HttpException) {
-      status = exception.getStatus();
-      error = exception.getResponse();
+      response.status(exception.getStatus()).json(exception.getResponse());
+      return;
     }
-    console.error('Error: ', exception);
-    response.status(status).json({
-      statusCode: status,
-      error,
+    response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+      statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+      error: 'Internal Server Error',
+      message: '系统异常',
     });
   }
 }
