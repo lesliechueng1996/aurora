@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { ArticleModule } from './article/article.module';
 import DatabaseRoot from './config/database.config';
 
 @Module({
@@ -9,6 +10,7 @@ import DatabaseRoot from './config/database.config';
       isGlobal: true,
     }),
     DatabaseRoot,
+    ArticleModule,
   ],
 })
 export class AppModule {}
