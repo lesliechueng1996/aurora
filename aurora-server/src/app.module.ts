@@ -1,10 +1,14 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { ConfigModule } from '@nestjs/config';
+import DatabaseRoot from './config/database.config';
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    ConfigModule.forRoot({
+      envFilePath: ['.env.prod', '.env.local'],
+      isGlobal: true,
+    }),
+    DatabaseRoot,
+  ],
 })
 export class AppModule {}
