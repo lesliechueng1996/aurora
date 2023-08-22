@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { ArticleModule } from './article/article.module';
 import DatabaseRoot from './config/database.config';
+import { CategoryModule } from './modules/category/category.module';
 
 @Module({
   imports: [
@@ -10,7 +10,7 @@ import DatabaseRoot from './config/database.config';
       isGlobal: true,
     }),
     DatabaseRoot,
-    ArticleModule,
+    CategoryModule,
   ],
 })
 export class AppModule {}
