@@ -81,4 +81,13 @@ export class CategoryService {
     await this.assertCategoryNameNotExist(categoryName);
     await this.categoryRepository.update(id, { categoryName });
   }
+
+  findAllAsKeyPair() {
+    return this.categoryRepository.find().then((res: Category[]) => {
+      return res.map((item) => ({
+        key: item.id,
+        label: item.categoryName,
+      }));
+    });
+  }
 }

@@ -46,7 +46,7 @@ export class CategoryController {
     await this.categoryService.createCatrgory(categoryName);
   }
 
-  @Get()
+  @Get('pagination')
   @ApiOperation({ summary: '搜索分类列表' })
   @ApiOkResponse({ description: '搜索分类列表成功' })
   async findCategories(@Query() query: ListCategoryDto) {
@@ -109,5 +109,12 @@ export class CategoryController {
     @Body() body: UpdateCategoryDto,
   ) {
     await this.categoryService.updateById(id, body.categoryName);
+  }
+
+  @Get('options')
+  @ApiOperation({ summary: '获取分类选项' })
+  @ApiOkResponse({ description: '获取分类选项成功' })
+  async categoryOptions() {
+    return await this.categoryService.findAllAsKeyPair();
   }
 }

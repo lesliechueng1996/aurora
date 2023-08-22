@@ -46,7 +46,7 @@ export class TagController {
     await this.tagService.createCatrgory(tagName);
   }
 
-  @Get()
+  @Get('pagination')
   @ApiOperation({ summary: '搜索标签列表' })
   @ApiOkResponse({ description: '搜索标签列表成功' })
   async findCategories(@Query() query: ListTagDto) {
@@ -109,5 +109,12 @@ export class TagController {
     @Body() body: UpdateTagDto,
   ) {
     await this.tagService.updateById(id, body.tagName);
+  }
+
+  @Get('options')
+  @ApiOperation({ summary: '获取标签选项' })
+  @ApiOkResponse({ description: '获取标签选项成功' })
+  async categoryOptions() {
+    return await this.tagService.findAllAsKeyPair();
   }
 }

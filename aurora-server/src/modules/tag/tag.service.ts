@@ -80,4 +80,13 @@ export class TagService {
     await this.assertTagNameNotExist(tagName);
     await this.tagRepository.update(id, { tagName });
   }
+
+  findAllAsKeyPair() {
+    return this.tagRepository.find().then((res: Tag[]) => {
+      return res.map((item) => ({
+        key: item.id,
+        label: item.tagName,
+      }));
+    });
+  }
 }
