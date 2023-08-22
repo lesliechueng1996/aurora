@@ -8,7 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Category } from './entity/category.entity';
 import { Like, Repository } from 'typeorm';
 import { ListCategoryDto } from './dto/list-category.dto';
-import { ArticleService } from '../article/article.service';
+// import { ArticleService } from '../article/article.service';
 import { formatDate } from '../../utils/date';
 
 @Injectable()
@@ -17,11 +17,10 @@ export class CategoryService {
 
   constructor(
     @InjectRepository(Category)
-    private readonly categoryRepository: Repository<Category>,
-    private readonly articleService: ArticleService,
+    private readonly categoryRepository: Repository<Category>, // private readonly articleService: ArticleService,
   ) {}
 
-  async assertCategoryNameNotExist(categoryName: string) {
+  private async assertCategoryNameNotExist(categoryName: string) {
     const count = await this.categoryRepository.countBy({ categoryName });
     if (count > 0) {
       this.logger.error(`分类已存在, categoryName: ${categoryName}`);

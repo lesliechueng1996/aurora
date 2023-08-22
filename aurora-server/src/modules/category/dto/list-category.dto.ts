@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { PaginationReq } from 'src/pojo/pagination-req';
+import { PaginationReq } from '../../../pojo/pagination-req';
 
 export class ListCategoryDto extends PaginationReq {
   @ApiProperty({
