@@ -16,7 +16,8 @@ export default TypeOrmModule.forRootAsync({
     entityPrefix: 't_',
     logging: 'all',
     namingStrategy: new SnakeNamingStrategy(),
-    synchronize: process.env.NODE_ENV !== 'production',
+    synchronize:
+      process.env.NODE_ENV !== 'production' && process.env.SYNC_DB !== 'NO',
     autoLoadEntities: true,
   }),
 });
