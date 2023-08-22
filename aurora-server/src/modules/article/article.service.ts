@@ -4,6 +4,7 @@ import { Article } from './entity/article.entity';
 import { Repository } from 'typeorm';
 import { ListArticleDto } from './dto/list-article.dto';
 import { ArticleStatus, ArticleType } from 'src/pojo/article.enum';
+import { ArticleSaveDto } from './dto/article-save.dto';
 
 @Injectable()
 export class ArticleService {
@@ -91,5 +92,63 @@ export class ArticleService {
     `;
 
     this.articleRepository.query(sql);
+  }
+
+  async getArticleById(id: number) {
+    return this.articleRepository.findOneBy({ id });
+  }
+
+  async isDraftExist(id: number | null | undefined) {
+    if (!id) {
+      return false;
+    }
+    const article = await this.getArticleById(id);
+    return article && article.status === ArticleStatus.DRAFT;
+  }
+
+  async saveDraft(title: string, content: string) {
+    const article = this.articleRepository.create({
+      // TODO - update
+      userId: 1,
+      articleTitle: title,
+      articleContent: content,
+      status: ArticleStatus.DRAFT,
+    });
+    return await this.articleRepository.save(article);
+  }
+
+  async updateDraft(id: number, title: string, content: string) {
+    await this.articleRepository.update(id, {
+      articleTitle: title,
+      articleContent: content,
+    });
+  }
+
+  createArticle(dto: ArticleSaveDto) {
+    const isPrivate = !!dto.password;
+    const article = this.articleRepository.create({
+      // TODO - update
+      userId: 1,
+      categoryId: dto.categoryId || null,
+      articleCover: dto.image || null,
+      articleTitle: dto.title,
+      articleContent: dto.content,
+      isTop: dto.isTop,
+      isFeatured: dto.isFeatured,
+      isDelete: false,
+      status: isPrivate ? ArticleStatus.PRIVATE : ArticleStatus.PUBLIC,
+      type: dto.type,
+      password: dto.password || null,
+      originalUrl: dto.originalUrl || null,
+    });
+    return article;
+  }
+
+  async saveArticle(dto: ArticleSaveDto) {
+    return await this.articleRepository.save(this.createArticle(dto));
+  }
+
+  async draftToArticle(dto: ArticleSaveDto) {
+    return await this.articleRepository.update(dto.id, this.createArticle(dto));
   }
 }
