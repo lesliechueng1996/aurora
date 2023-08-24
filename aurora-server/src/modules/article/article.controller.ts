@@ -2,6 +2,7 @@ import { Controller, Post, Get, Query, Body } from '@nestjs/common';
 import { ArticleService } from './article.service';
 import {
   ApiBadRequestResponse,
+  ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -25,7 +26,7 @@ export class ArticleController {
 
   @Post('draft')
   @ApiOperation({ summary: '保存草稿' })
-  @ApiOkResponse({ description: '保存草稿成功, 文章ID' })
+  @ApiCreatedResponse({ description: '保存草稿成功, 文章ID' })
   async saveAsDraft(@Body() body: ArticleDraftDto) {
     const { id, title, content } = body;
     const isDraftExist = await this.articleService.isDraftExist(id);
@@ -40,7 +41,7 @@ export class ArticleController {
 
   @Post()
   @ApiOperation({ summary: '保存文章' })
-  @ApiOkResponse({ description: '保存文章成功' })
+  @ApiCreatedResponse({ description: '保存文章成功' })
   async saveArticle(@Body() body: ArticleSaveDto) {
     const { id } = body;
     const isDraftExist = await this.articleService.isDraftExist(id);
