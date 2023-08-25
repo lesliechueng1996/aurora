@@ -36,7 +36,9 @@ if (process.env.NODE_ENV !== 'production') {
         format.timestamp(),
         format.prettyPrint(),
         format.printf((info) => {
-          return `${info.timestamp} [${info.level}] ${info.message} ${info.stack}`;
+          return `${info.timestamp} [${info.level}] ${info.message} ${
+            info.stack || ''
+          }`;
         }),
       ),
     }),
