@@ -83,6 +83,7 @@ export const invokeApi = (url: string, init?: RequestInit) => {
     const headers = {
       ...init?.headers,
       Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
     };
 
     const newInit = {
@@ -93,10 +94,13 @@ export const invokeApi = (url: string, init?: RequestInit) => {
     fetch(BASE_URL + url, newInit)
       .then((res) => {
         if (res.ok) {
-          resolve(res.json());
+          return res.text();
         } else {
           reject(res);
         }
+      })
+      .then((data) => {
+        resolve(data ? JSON.parse(data) : {});
       })
       .catch(reject);
   });

@@ -787,7 +787,7 @@ import { ZhihuOutlined } from '@ant-design/icons';
 import { ZhihuSquareFilled } from '@ant-design/icons';
 import { ZoomInOutlined } from '@ant-design/icons';
 import { ZoomOutOutlined } from '@ant-design/icons';
-import React from 'react';
+import React, { memo } from 'react';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const ICONS: { [key: string]: any } = {
@@ -1586,7 +1586,7 @@ type Props = {
   name: string;
 };
 
-const DynamicIcon = ({ name, ...props }: Props) => {
+const DynamicIcon = memo(({ name, ...props }: Props) => {
   if (Object.keys(ICONS).includes(name)) {
     return React.createElement(ICONS[name], {
       style: { fontSize: '16px' },
@@ -1598,6 +1598,6 @@ const DynamicIcon = ({ name, ...props }: Props) => {
       ...props,
     });
   }
-};
+});
 
 export default DynamicIcon;

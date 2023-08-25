@@ -7,7 +7,7 @@ import { invokeApi } from '../utils/http';
 
 export type MenuItem = Required<MenuProps>['items'][number];
 
-const fetchMenu = () => invokeApi('/menu');
+const fetchMenu = () => invokeApi('/menu?index=1');
 
 export type ServerMenuItem = {
   id: number;
@@ -17,6 +17,7 @@ export type ServerMenuItem = {
   orderNum: number;
   parentId: number | null;
   isHidden: boolean;
+  createTime: string;
   children?: ServerMenuItem[];
 };
 
