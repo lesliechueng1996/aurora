@@ -6,6 +6,7 @@ import {
   Post,
   Get,
   Query,
+  Patch,
 } from '@nestjs/common';
 import { MenuService } from './menu.service';
 import {
@@ -18,6 +19,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { MenuCreateDto } from './dto/menu-create.dto';
+import { HideMenuDto } from './dto/hide-menu.dto';
 
 @Controller('menu')
 @ApiTags('菜单')
@@ -46,8 +48,28 @@ export class MenuController {
   @Get()
   @ApiOperation({ summary: '查询菜单树' })
   @ApiQuery({ name: 'menuName', description: '菜单/目录名称', required: false })
+  @ApiQuery({ name: 'index', description: '是否用于首页', required: false })
   @ApiOkResponse({ description: '查询菜单树成功' })
-  async searchMenuTree(@Query('menuName') menuName?: string) {
-    return await this.menuService.searchMenus(menuName);
+  async searchMenuTree(
+    @Query('menuName') menuName?: string,
+    @Query('index') index?: string,
+  ) {
+    return await this.menuService.searchMenus(!!index, menuName);
+  }
+
+  @Patch(':id')
+  @ApiOperation({ summary: '隐藏/显示菜单' })
+  @ApiParam({ name: 'id', description: '菜单/目录 ID' })
+  @ApiOkResponse({ description: '成功' })
+  async hideMenu(
+    @Body() body: HideMenuDto,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    const { isHide } = body;
+    if (isHide) {
+      await this.menuService.hideMenu(id);
+    } else {
+      await this.menuService.showMenu(id);
+    }
   }
 }

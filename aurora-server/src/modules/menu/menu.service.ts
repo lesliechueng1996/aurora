@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Menu } from './entity/menu.entity';
 import { In, Like, Repository } from 'typeorm';
 import { MenuCreateDto } from './dto/menu-create.dto';
+import { MenuItem, modify } from './dto/menu-item.dto';
 
 @Injectable()
 export class MenuService {
@@ -27,9 +28,14 @@ export class MenuService {
   }
 
   generateTree(menus: Menu[]) {
-    const rootMenus = menus.filter((item) => item.parentId === null);
-    const findChildren = (parent: Menu) => {
-      const children = menus.filter((item) => item.parentId === parent.id);
+    const rootMenus: MenuItem[] = menus
+      .filter((item) => item.parentId === null)
+      .map((item) => modify(item));
+
+    const findChildren = (parent: MenuItem) => {
+      const children = menus
+        .filter((item) => item.parentId === parent.id)
+        .map((item) => modify(item));
       if (children.length > 0) {
         parent.children = children;
       }
@@ -38,7 +44,7 @@ export class MenuService {
     return rootMenus;
   }
 
-  async searchMenus(menuName?: string) {
+  async searchMenus(useInIndex: boolean, menuName?: string) {
     let menus: Menu[] = [];
     if (menuName) {
       const temp = await this.menuRepository.findBy({
@@ -48,13 +54,13 @@ export class MenuService {
         (item) => item.parentId === null && item.path === null,
       );
       const childMenu = temp.filter((item) => item.parentId !== null);
-      menus.concat(temp);
-      menus.concat(
+      menus = menus.concat(temp);
+      menus = menus.concat(
         await this.menuRepository.findBy({
           parentId: In(parentMenu.map((item) => item.id)),
         }),
       );
-      menus.concat(
+      menus = menus.concat(
         await this.menuRepository.findBy({
           id: In(childMenu.map((item) => item.parentId)),
         }),
@@ -76,6 +82,29 @@ export class MenuService {
       });
     }
 
+    if (useInIndex) {
+      return this.generateTree(menus.filter((item) => !item.isHidden));
+    }
     return this.generateTree(menus);
+  }
+
+  async hideMenu(id: number) {
+    await this.menuRepository.update(id, {
+      isHidden: true,
+    });
+    await this.menuRepository.update(
+      {
+        parentId: id,
+      },
+      {
+        isHidden: true,
+      },
+    );
+  }
+
+  showMenu(id: number) {
+    return this.menuRepository.update(id, {
+      isHidden: false,
+    });
   }
 }
