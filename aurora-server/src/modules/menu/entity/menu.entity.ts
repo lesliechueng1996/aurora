@@ -12,13 +12,15 @@ export class Menu {
 
   @Column({
     length: 50,
+    nullable: true,
   })
-  path: string;
+  path: string | null;
 
   @Column({
     length: 50,
+    nullable: true,
   })
-  icon: string;
+  icon: string | null;
 
   @Column()
   orderNum: number;
