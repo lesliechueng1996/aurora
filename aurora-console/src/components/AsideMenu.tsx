@@ -1,15 +1,17 @@
 import { Menu } from 'antd';
-import useMenu, { searchKey } from '../hooks/useMenu';
 import { useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { searchKey, ServerMenuItem, MenuItem } from '../hooks/useMenu';
 
 type Props = {
   collapsed: boolean;
+  serverMenus?: ServerMenuItem[];
+  menus: MenuItem[];
 };
 
-function AsideMenu({ collapsed }: Props) {
+function AsideMenu({ collapsed, serverMenus, menus }: Props) {
   const location = useLocation();
-  const { menus, data: serverMenus } = useMenu();
+
   const [selectAndOpenKey, setSelectAndOpenKey] = useState<{
     selectKey: string[];
     openKey: string[];

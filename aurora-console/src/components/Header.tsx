@@ -7,6 +7,7 @@ import {
 import type { MenuProps } from 'antd';
 import { Avatar, Dropdown, Breadcrumb } from 'antd';
 import { Link, useLocation } from 'react-router-dom';
+import type { UrlNameMap } from '../hooks/useMenu';
 
 const Container = styled.div`
   display: flex;
@@ -32,6 +33,7 @@ const AvatarWrap = styled.div`
 
 type Props = {
   expand: boolean;
+  urlNameMap?: UrlNameMap;
   toggleExpand: () => void;
 };
 
@@ -46,24 +48,30 @@ const items: MenuProps['items'] = [
   },
 ];
 
-function Header({ expand, toggleExpand }: Props) {
+function Header({ expand, toggleExpand, urlNameMap = {} }: Props) {
   const location = useLocation();
-  const pathSnippets = location.pathname.split('/').filter((i) => i);
+  const nameMap = urlNameMap[location.pathname];
 
-  const extraBreadcrumbItems = pathSnippets.map((_, index) => {
-    const url = `/${pathSnippets.slice(0, index + 1).join('/')}`;
-    return {
-      key: url,
-      title: <Link to={url}>test</Link>,
-    };
-  });
+  const extraItems = [];
+  if (location.pathname !== '/' && nameMap && nameMap.parentName) {
+    extraItems.push({
+      title: <span>{nameMap.parentName}</span>,
+      key: 'parent',
+    });
+  }
+  if (location.pathname !== '/' && nameMap && nameMap.name) {
+    extraItems.push({
+      title: <span>{nameMap.name}</span>,
+      key: 'current',
+    });
+  }
 
   const breadcrumbItems = [
     {
       title: <Link to="/">首页</Link>,
       key: 'home',
     },
-  ].concat(extraBreadcrumbItems);
+  ].concat(extraItems);
 
   return (
     <Container>

@@ -1,15 +1,15 @@
 import { useQuery } from '@tanstack/react-query';
-import { BASE_URL } from '../config';
 import type { MenuProps } from 'antd';
 import DynamicIcon from '../components/DynamicIcon';
 import { Link } from 'react-router-dom';
 import { useMemo } from 'react';
+import { invokeApi } from '../utils/http';
 
-type MenuItem = Required<MenuProps>['items'][number];
+export type MenuItem = Required<MenuProps>['items'][number];
 
-const fetchMenu = () => fetch(`${BASE_URL}/menu`).then((res) => res.json());
+const fetchMenu = () => invokeApi('/menu');
 
-type ServerMenuItem = {
+export type ServerMenuItem = {
   id: number;
   name: string;
   path: string | null;
@@ -18,6 +18,13 @@ type ServerMenuItem = {
   parentId: number | null;
   isHidden: boolean;
   children?: ServerMenuItem[];
+};
+
+export type UrlNameMap = {
+  [key: string]: {
+    name: string;
+    parentName?: string;
+  };
 };
 
 function modifyMenu(item: ServerMenuItem): MenuItem {
@@ -71,11 +78,43 @@ function useMenu() {
     return [];
   }, [query.isSuccess, query.data]);
 
+  const urlNameMap = useMemo(() => {
+    const map: UrlNameMap = {};
+
+    if (query.isSuccess) {
+      const serverMenus = query.data;
+      for (let i = 0; i < serverMenus.length; i++) {
+        const topLevelMenu = serverMenus[i];
+        if (topLevelMenu.path !== null) {
+          map[topLevelMenu.path!] = {
+            name: topLevelMenu.name,
+          };
+          continue;
+        }
+
+        if (topLevelMenu.children) {
+          for (let j = 0; j < topLevelMenu.children.length; j++) {
+            const subMenu = topLevelMenu.children[j];
+            if (subMenu.path !== null) {
+              map[subMenu.path!] = {
+                name: subMenu.name,
+                parentName: topLevelMenu.name,
+              };
+            }
+          }
+        }
+      }
+
+      return map;
+    }
+  }, [query.data, query.isSuccess]);
+
   return {
     isLoading: query.isLoading,
     error: query.error,
     menus,
     data: query.data,
+    urlNameMap,
   };
 }
 
